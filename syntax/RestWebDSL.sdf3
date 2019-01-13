@@ -1,0 +1,14 @@
+module RestWebDSL
+
+imports
+  
+  Common
+  EntityDecl
+
+//context-free start-symbols
+//  
+//  Start
+//
+//context-free syntax
+//  
+//  Start.Empty = <>

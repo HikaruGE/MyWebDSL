@@ -1,0 +1,108 @@
+module generate-entity
+
+imports
+  
+  completion/completion
+  pp
+  outline
+  analysis
+  signatures/-
+
+strategies
+	
+	declare-entity =
+    ?Entity(className,_);
+    rules(
+        defined-java-type :
+        Type(className) -> $[[className]]
+		)
+
+rules 
+	
+	entities-to-classes:
+	(selected, position, ast, path, project-path) -> (filename, result)
+	where
+		entityLst := <get-entity-lst>selected;
+		className := <map(get-entity-name)> entityLst;
+//		<alltd(test-test)> selected;
+//		<WriteToTextFile>("text/s.aterm",<alltd(test-test)> selected);
+//		<WriteToTextFile>("text/s.txt",<map(declare-entity)> entityLst);
+//		<WriteToTextFile>("text/s.txt",<alltd(tst)>ast);
+		<debug(!"dym-rules: ")><alltd(declare-entity)> selected;
+		targetPath:= <map(\x-><conc-strings>("spring-boot/entity/",x)\)>className;
+		filename := <map(guarantee-extension(|"java"))> targetPath;
+
+		result	 := <map(entity-to-class(|selected))>entityLst
+
+rules
+
+	get-entity-lst:
+		Model(e*) -> e*
+		
+	get-entity-name:
+		Entity(className,_) -> className
+
+rules
+	
+	entity-to-class(|ast):
+	Entity(className,prop*)->
+	$[package entity;
+	  
+	  import javax.persistence.*;
+	  
+	  @Entity
+	  public class [className]{
+	  
+	  	@Id
+	  	@GeneratedValue
+    	private Long id;
+    	public Long getId() {return id;}
+    	public void setId(Long id) {this.id = id;}
+    	
+    	public [className](){}
+    	
+	  	[prop'*]
+	  	}
+	  ]
+	with
+	  prop'* := <map(prop-get-set)>prop*
+	
+	prop-get-set:
+	Property(name,type)->
+	$[private [type'] [name];
+	public [type'] get[name](){return [name];}
+	public void set[name](){this.[name] = [name];}
+	
+	]
+	with
+	  type' := <debug(!"djt: ")><defined-java-type> type
+	
+	prop-get-set:
+	Property(name,type)->
+	$[private [type'] [name];
+	public [type'] get[name](){return [name];}
+	public void set[name](){this.[name] = [name];}
+	
+	]
+	with
+	  type' := <debug(!"bjt: ")><builtin-java-type> type
+    
+    //	  type' := <builtin-java-type <+ defined-java-type(|ast)> type
+    
+rules
+	
+	builtin-java-type:
+	Type("String") -> $[String]
+	
+	builtin-java-type:
+	Type("int") -> $[int]
+	
+//	defined-java-type(|ast) =
+//	if <alltd(?Entity(x_Class,_))>ast
+//    then Type(x_Class) -> $[[x_Class]]
+//    else None()
+//    end
+//	defined-java-type(|ast):
+//    Type(x_Class) -> $[[x_Class]]
+    	
+    

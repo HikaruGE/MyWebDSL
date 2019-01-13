@@ -1,0 +1,29 @@
+module EntityDecl
+
+imports 
+	Common
+	Lexical
+
+context-free start-symbols
+  	Start
+
+context-free syntax
+  	Start = Model
+  
+sorts
+	Model
+	Entity
+	Property
+	
+context-free syntax
+	Model.Model = <<Entity*>>
+	Entity.Entity = <entity<ID>{<Property*>}>
+	Property.Property = <<ID>:<Type>>
+	
+sorts Type
+
+context-free syntax
+//	Type.String = <String>
+//	Type.Int = <int>
+	Type.Type = <<ID>>
+	

@@ -1,0 +1,12 @@
+Model(
+  [ Entity(
+      "Person"
+    , [ Property("fullname", Type("String"))
+      , Property("email", Type("String"))
+      , Property("homepage", Type("String"))
+      , Property("age", Type("int"))
+      ]
+    )
+  , Entity("Color", [Property("name", Type("String"))])
+  ]
+)

@@ -1,0 +1,25 @@
+module restwebdsl
+
+imports
+  
+  completion/completion
+  pp
+  outline
+  analysis
+  signatures/-
+  
+  generate-entity
+
+rules // Debugging
+  
+  debug-show-aterm:
+    (node, _, _, path, project-path) -> (filename, result)
+    with
+      filename := <guarantee-extension(|"aterm")> path
+    ; result   := node
+    
+    
+strategies
+	main = entities-to-classes
+
+

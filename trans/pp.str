@@ -1,0 +1,49 @@
+module pp
+
+imports
+
+  libstratego-gpp
+  libspoofax/sdf/pp
+  libspoofax/editor/refactoring/-
+  pp/RestWebDSL-parenthesize
+  pp/RestWebDSL-pp
+
+rules
+
+  editor-format:
+    (node, _, ast, path, project-path) -> (filename, result)
+    with
+      ext      := <get-extension> path
+    ; filename := <guarantee-extension(|$[pp.[ext]])> path
+    ; result   := <pp-debug> node
+
+rules
+  
+  pp-RestWebDSL-string =
+    parenthesize-RestWebDSL
+    ; prettyprint-RestWebDSL-start-symbols
+    ; !V([], <id>)
+    ; box2text-string(|120)
+      
+  pp-partial-RestWebDSL-string =
+    parenthesize-RestWebDSL
+    ; prettyprint-RestWebDSL
+    ; !V([], <id>)
+    ; box2text-string(|120)
+    
+  pp-partial-RestWebDSL-string(|sort) =
+    parenthesize-RestWebDSL
+    ; prettyprint-RestWebDSL(|sort)
+    ; !V([], <id>)
+    ; box2text-string(|120)  
+      
+  pp-debug :
+    ast -> result
+    with
+       result := <pp-RestWebDSL-string> ast
+    <+ <bottomup(try(not(is-string); not(is-list); not(pp-RestWebDSL-string); debug(!"cannot pp ")))> ast
+    ;  result := ""
+
+rules
+  
+  construct-textual-change = construct-textual-change(pp-partial-RestWebDSL-string, parenthesize, override-reconstruction, resugar)
